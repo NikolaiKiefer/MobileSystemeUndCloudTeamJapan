@@ -1,17 +1,23 @@
 package com.example.mobilesystemeundcloudteamjapan;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 // import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+// import com.google.android.gms.location.LocationListener;
 
 public class MainActivity extends AppCompatActivity {
     private SensorManager sensorManager;
@@ -52,23 +58,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-/*
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},12121);
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        } else {
+            locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    MIN_TIME_TO_REFRSH,
+                    MIN_DISTANCE_TO_REFRESH,
+                    locationListener);
+        }
         gpsButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        MIN_TIME_TO_REFRSH,
-                        MIN_DISTANCE_TO_REFRESH,
-                        locationListener);
-
-                locationManager.requestLocationUpdates();
 
             }
         });
 
-*/
     }
 
     private final SensorEventListener acceloratorSensorListener = new SensorEventListener() {
@@ -98,12 +107,26 @@ public class MainActivity extends AppCompatActivity {
             // Do something with this sensor data.
         }
     };
-
-   /* final private LocationListener locationListener = new LocationListener() {
+    final private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            gpsView.setText(String.valueOf(location.getLatitude()));
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
         }
-    };*/
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 }
 
