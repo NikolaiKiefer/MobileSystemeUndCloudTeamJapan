@@ -1,6 +1,7 @@
 package com.example.mobilesystemeundcloudteamjapan;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 // import com.google.android.gms.location.LocationListener;
 
@@ -56,25 +58,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},12121);
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        } else {
-            locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    MIN_TIME_TO_REFRSH,
-                    MIN_DISTANCE_TO_REFRESH,
-                    locationListener);
-        }
         gpsButton.setOnClickListener(new Button.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},12121);
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                } else {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            MIN_TIME_TO_REFRSH,
+                            MIN_DISTANCE_TO_REFRESH,
+                            locationListener);
+                }
             }
         });
 
@@ -84,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onSensorChanged(SensorEvent event) {
             acceloratorView.setText(String.valueOf(event.values[0]));
+            View view = getWindow().getDecorView();
+            if(event.values[0] >= 5) {
+                // View view = getWindow().getDecorView();
+                view.setBackgroundColor(0xfff00000);
+            } if (event.values[0] <= -0.1){
+                view.setBackgroundColor(0xff00ff00);
+            }
         }
 
         @Override
@@ -105,8 +110,19 @@ public class MainActivity extends AppCompatActivity {
         public final void onSensorChanged(SensorEvent event) {
             lightSensorView.setText(String.valueOf(event.values[0]));
             // Do something with this sensor data.
+            if (event.values[0] >= 10000) {
+                Context context = getApplicationContext();
+                CharSequence text = "Bruder mach bitte des Licht aus";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
         }
     };
+
+
+
     final private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
