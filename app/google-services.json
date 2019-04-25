@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "570002243450",
+    "firebase_url": "https://mobilesystemeundcloudteamjapan.firebaseio.com",
+    "project_id": "mobilesystemeundcloudteamjapan",
+    "storage_bucket": "mobilesystemeundcloudteamjapan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:570002243450:android:db17a5a6c0adf0d4",
+        "android_client_info": {
+          "package_name": "com.example.mobilesystemeundcloudteamjapan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "570002243450-16qqdrldefgq40lvcfneifkbdblfbkk6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobilesystemeundcloudteamjapan",
+            "certificate_hash": "f0b563273e51db3c43022ce99b44f53c67a1ce6d"
+          }
+        },
+        {
+          "client_id": "570002243450-lmjl3qqae939ijlb13k67a19htqrm328.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT9a1cMG7Cm0_aOq17OFLOm8Etd4j_MYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "570002243450-lmjl3qqae939ijlb13k67a19htqrm328.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

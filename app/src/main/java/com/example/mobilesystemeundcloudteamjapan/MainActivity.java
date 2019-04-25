@@ -108,15 +108,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public final void onSensorChanged(SensorEvent event) {
+            // In event.values[0] steht der wert des Licht sensors drin
             lightSensorView.setText(String.valueOf(event.values[0]));
-            // Do something with this sensor data.
             if (event.values[0] >= 10000) {
                 Context context = getApplicationContext();
-                CharSequence text = "Bruder mach bitte des Licht aus";
-                int duration = Toast.LENGTH_SHORT;
 
+                CharSequence text = "Mach das Licht aus meine Fische schlafen";
+                int duration = Toast.LENGTH_SHORT;
                 Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                if (!toast.getView().isShown()) {
+                    toast.show();
+                }
             }
         }
     };
