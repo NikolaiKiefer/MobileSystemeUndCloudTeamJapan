@@ -11,3 +11,6 @@ Eine Android App um Sensoren zu testen
   <li><b>Acceloratorsensor</b></li>
   <li><b>Gps Sensor</b></li>
 </ul>
+<h3>Aufgabe 2: Firebase Gundlagen</h3>
+
+<b>Bei der zweiten Ausgabe sollten wir per Google Firebase einen Login und Logout sowie das Anzeigen von den Account Informationen implementieren </b>
