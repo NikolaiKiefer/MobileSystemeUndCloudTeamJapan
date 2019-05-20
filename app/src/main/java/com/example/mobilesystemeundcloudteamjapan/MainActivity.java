@@ -1,6 +1,8 @@
 package com.example.mobilesystemeundcloudteamjapan;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,12 +14,14 @@ import android.location.Location;
 // import com.google.android.gms.location.LocationListener;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +35,10 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Random;
 
 // import com.google.android.gms.location.LocationListener;
 
@@ -39,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LocationManager locationManager;
     private TextView lightSensorView;
     private TextView acceloratorView;
+    private Button messageButton;
     private Button gpsButton;
     private SignInButton signInButton;
     private Button signOutButton;
@@ -47,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView googlePreName;
     private TextView googleEmail;
     private TextView googleAccountId;
-    private ImageView googleImg;
+   // private WebView profilePicFire;
     GoogleSignInClient mGoogleSignInClient;
 
     private static final long MIN_TIME_TO_REFRSH = 3000L;
@@ -57,6 +66,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        String channelId  = "123456";
+        String channelName = "News";
+
+        NotificationManager notificationManager =  getSystemService(NotificationManager.class);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW));
+        }
+
+        // MyFirebaseMessagingService myFirebaseMessage = new MyFirebaseMessagingService();
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
@@ -75,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         googlePreName = findViewById(R.id.googlePreName);
         googleAccountId = findViewById(R.id.googleAccId);
         googleEmail = findViewById(R.id.googleEmail);
+        messageButton = findViewById(R.id.messageButton);
+        // profilePicFire = findViewById(R.id.webViewProfilepic);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -130,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             googleName.setVisibility(View.GONE);
             googlePreName.setVisibility(View.GONE);
             googleAccountId.setVisibility(View.GONE);
+           // profilePicFire.setVisibility(View.GONE);
             googleEmail.setText(null);
             googleName.setText(null);
             googlePreName.setText(null);
@@ -139,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             googleName.setText(account.getFamilyName());
             googlePreName.setText(account.getGivenName());
             googleAccountId.setText(account.getId());
+          //  profilePicFire.loadUrl(account.getPhotoUrl().toString());
+          //  profilePicFire.setVisibility(View.VISIBLE);
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
             googleEmail.setVisibility(View.VISIBLE);
@@ -228,6 +253,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.v(TAG, "HEIEIEIIEIEIEIEI");
                 signOut();
                 break;
+            case R.id.messageButton:
+                Log.v(TAG, "send message");
+                sendMessage();
 
             // ...
         }
@@ -285,6 +313,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         // ...
                     }
                 });
+    }
+
+    private void sendMessage(){
+        Random random = new Random();
+        FirebaseMessaging fm = FirebaseMessaging.getInstance();
+        String projectId = "570002243450";
+        Log.d(TAG, "Try to send a Message at Server: "+projectId);
+        fm.send(new RemoteMessage.Builder( projectId + "@gcm.googleapis.com")
+                .setMessageId(""+random.nextInt())
+                .addData("Your Identifier", "Your Message")
+                .addData("Your Next Identifier","Your Next Message")
+                .addData("action", "ECHO")
+                .build());
     }
 
 }

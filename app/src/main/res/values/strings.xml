@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MobileSystemeUndCloudTeamJapan</string>
+    <string name="light_sensor_label">Licht Sensor meldet:</string>
 </resources>
