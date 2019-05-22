@@ -134,6 +134,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        messageButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
     }
 
     @Override
@@ -253,10 +259,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.v(TAG, "HEIEIEIIEIEIEIEI");
                 signOut();
                 break;
-            case R.id.messageButton:
+            /*case R.id.messageButton:
                 Log.v(TAG, "send message");
                 sendMessage();
-
+                break;*/
             // ...
         }
     }
@@ -322,8 +328,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "Try to send a Message at Server: "+projectId);
         fm.send(new RemoteMessage.Builder( projectId + "@gcm.googleapis.com")
                 .setMessageId(""+random.nextInt())
-                .addData("Your Identifier", "Your Message")
-                .addData("Your Next Identifier","Your Next Message")
                 .addData("action", "ECHO")
                 .build());
     }
