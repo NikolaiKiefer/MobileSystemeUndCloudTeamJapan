@@ -20,5 +20,5 @@ Eine Android App um Sensoren zu testen
 <b>Bei der dritten Aufgabe sollte der Android Client über den Firebase Message Service eine Push Benachrichtigung erhalten</b>
 <p>Hierfür ist der dazugehörige Server wichtig</p>
 <p>Wir erhalten jenen auf:</p>
-<a>https://github.com/carlosCharz/fcmxmppserver</a>
+[fcmxmppserver](https://github.com/carlosCharz/fcmxmppserver)
 <p>Dieser Server kann als Standalone ausgeführt werden</p>
