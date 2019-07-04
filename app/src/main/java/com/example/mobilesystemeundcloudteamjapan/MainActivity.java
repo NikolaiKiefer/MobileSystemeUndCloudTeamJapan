@@ -15,18 +15,21 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mobilesystemeundcloudteamjapan.tracking.Accelorator;
+import com.example.mobilesystemeundcloudteamjapan.tracking.GPS;
+import com.example.mobilesystemeundcloudteamjapan.tracking.Light;
+import com.example.mobilesystemeundcloudteamjapan.tracking.Person;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -64,17 +67,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int RC_SIGN_IN = 9001;
     private static final String TAG = "MainActivity";
 
+    private Light light = new Light();
+    private GPS gps = new GPS();
+    private Accelorator accelorator = new Accelorator();
+    private Person person = new Person();
+    private long lastUpdate;
+    private FirebaseMessaging fm;
+    private String projectId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         String channelId  = "123456";
         String channelName = "News";
+        projectId = "570002243450";
 
         NotificationManager notificationManager =  getSystemService(NotificationManager.class);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.createNotificationChannel(new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW));
         }
+
+        fm = FirebaseMessaging.getInstance();
 
         // MyFirebaseMessagingService myFirebaseMessage = new MyFirebaseMessagingService();
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -97,20 +111,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         googleEmail = findViewById(R.id.googleEmail);
         messageButton = findViewById(R.id.messageButton);
         // profilePicFire = findViewById(R.id.webViewProfilepic);
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        sensorManager.registerListener(
-                lightSensorListener,
-                lightSensor,
-                SensorManager.SENSOR_DELAY_NORMAL);
 
         sensorManager.registerListener(
-                acceloratorSensorListener,
+                lightSensorListener,
+                lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        sensorManager.registerListener(
+                accelorator.acceloratorListener,
                 acceloratorSensor,
                 SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -129,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             LocationManager.GPS_PROVIDER,
                             MIN_TIME_TO_REFRSH,
                             MIN_DISTANCE_TO_REFRESH,
-                            locationListener);
+                            gps.locationListener);
                 }
             }
         });
@@ -147,7 +160,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if(account.getId() != null) {
+            sendAccDetails(account);
+        }
         updateUI(account);
+
     }
 
     private void updateUI(GoogleSignInAccount account) {
@@ -212,22 +229,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public final void onSensorChanged(SensorEvent event) {
             // In event.values[0] steht der wert des Licht sensors drin
             lightSensorView.setText(String.valueOf(event.values[0]));
-            if (event.values[0] >= 10000) {
-                Context context = getApplicationContext();
-
-                CharSequence text = "Mach das Licht aus meine Fische schlafen";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                if (!toast.getView().isShown()) {
-                    toast.show();
-                }
+            double eventLightValue = event.values[0];
+            light.setLightValue(eventLightValue);
+            if(System.currentTimeMillis() - lastUpdate > 5000) {
+                lastUpdate = System.currentTimeMillis();
+                light.sendLightToServer(fm);
             }
         }
     };
 
 
 
-    final private LocationListener locationListener = new LocationListener() {
+    final private LocationListener locationListenerOld = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             gpsView.setText(String.valueOf(location.getLatitude()));
@@ -291,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             // Signed in successfully, show authenticated UI.
             updateUI(account);
+            sendAccDetails(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -323,12 +337,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendMessage(){
         Random random = new Random();
-        FirebaseMessaging fm = FirebaseMessaging.getInstance();
-        String projectId = "570002243450";
+        // FirebaseMessaging fm = FirebaseMessaging.getInstance();
         Log.d(TAG, "Try to send a Message at Server: "+projectId);
         fm.send(new RemoteMessage.Builder( projectId + "@gcm.googleapis.com")
                 .setMessageId(""+random.nextInt())
                 .addData("action", "ECHO")
+                .build());
+    }
+
+    private void sendAccDetails(GoogleSignInAccount account) {
+        Log.d(TAG, "Try to send Account Details to the Server: "+projectId);
+        fm.send(new RemoteMessage.Builder( projectId + "@gcm.googleapis.com")
+                .setMessageId("1")
+                .addData("action", "REGISTER")
+                .addData("prename", "" + account.getGivenName())
+                .addData("lastname", "" + account.getFamilyName())
+                .addData("email", "" + account.getEmail())
+                .addData("googleId", "" + account.getId())
+                .addData("clientToken", "" + account.getIdToken())
                 .build());
     }
 
