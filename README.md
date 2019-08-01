@@ -22,3 +22,7 @@ Eine Android App um Sensoren zu testen
 <p>Wir erhalten jenen auf:</p>
 https://github.com/carlosCharz/fcmxmppserver
 <p>Dieser Server kann als Standalone ausgeführt werden</p>
+
+
+<h3>Aufgabe 4</h3>
+<b>In der letzten Aufagbe sollten wir die Sensoren schließlich auslesen und an den Server senden wo diese angezeigt werden</b>
